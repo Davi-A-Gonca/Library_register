@@ -21,19 +21,17 @@ public class LibraryController {
     @Autowired
     private BookService bService;
 
-    //Create
+    //Create / Uptdate
     @PostMapping(Constant.API_LIBRARY)
     public ResponseEntity<Library> createLibrary(@RequestBody LibraryDTO dto){
         Library savedLibrary = lService.save(new Library(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLibrary);
     }
 
-    //Uptdate
-
     //Read
     @GetMapping(Constant.API_LIBRARY)
     public ResponseEntity<List<Library>> findAll(){
-        return ResponseEntity.ok(lService.findAll());
+        return ResponseEntity.ok(lService.listAll());
     }
 
     @GetMapping(Constant.API_LIBRARY + "/{id}")

@@ -12,12 +12,6 @@ public class Library {
     private String name;
     private String cep;
 
-    public Library(String id, String name, String cep){
-        this.id = id;
-        this.name = name;
-        this.cep = cep;
-    }
-
     public Library(LibraryDTO dto){
         this.name = dto.getName();
         this.cep = dto.getCep();

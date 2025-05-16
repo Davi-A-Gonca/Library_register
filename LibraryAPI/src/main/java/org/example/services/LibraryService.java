@@ -19,7 +19,7 @@ public class LibraryService {
         return l;
     }
 
-    public List<Library> findAll(){
+    public List<Library> listAll(){
         return repository.findAll();
     }
 
