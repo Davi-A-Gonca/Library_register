@@ -45,4 +45,13 @@ public class LibraryController {
         lService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    /*
+    @DeleteMapping(Constant.API_LIBRARY + "DELETEALL")
+    public ResponseEntity<Void> deleteAll(){
+        for(Library l : lService.listAll()){
+            lService.deleteById(l.getId());
+        }
+        return ResponseEntity.noContent().build();
+    }*/
 }

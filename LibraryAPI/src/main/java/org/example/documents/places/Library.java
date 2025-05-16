@@ -12,6 +12,10 @@ public class Library {
     private String name;
     private String cep;
 
+    public Library(){
+
+    }
+
     public Library(LibraryDTO dto){
         this.name = dto.getName();
         this.cep = dto.getCep();

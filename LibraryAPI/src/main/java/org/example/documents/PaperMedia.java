@@ -11,4 +11,8 @@ public abstract class PaperMedia implements Media {
     private String summary;
     private String publisher;
     private Library place;
+
+    public PaperMedia(){
+
+    }
 }
