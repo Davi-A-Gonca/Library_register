@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Optional;
 
-public interface CRUDThymeleaf<T, D> {
-    ResponseEntity<T> create(@RequestBody D dto);
+public interface CRUDThymeleaf<Media, MediaDTO> {
+    ResponseEntity<Media> create(MediaDTO dto);
 
-    ResponseEntity<List<T>> findAll();
+    ResponseEntity<List<Media>> findAll();
 
-    ResponseEntity<Optional<T>> findById(@PathVariable("id") String id);
+    ResponseEntity<Optional<Media>> findById(String id);
 
-    ResponseEntity<Void> deleteById(@PathVariable String id);
+    ResponseEntity<Void> deleteById(String id);
 }

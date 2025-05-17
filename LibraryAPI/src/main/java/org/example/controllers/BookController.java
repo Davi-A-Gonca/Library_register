@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,23 +22,24 @@ public class BookController implements CRUDThymeleaf<Book, BookDTO> {
 
     @Override
     @PostMapping(Constant.API_BOOK + "/{id}")
-    public ResponseEntity<Book> create(BookDTO dto) {
+    public ResponseEntity<Book> create(@RequestBody BookDTO dto) {
         Book savedBook = service.save(new Book(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
     @Override
     public ResponseEntity<List<Book>> findAll() {
-        return null;
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Override
-    public ResponseEntity<Optional<Book>> findById(String id) {
-        return null;
+    public ResponseEntity<Optional<Book>> findById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @Override
-    public ResponseEntity<Void> deleteById(String id) {
-        return null;
+    public ResponseEntity<Void> deleteById(@PathVariable("id") String id) {
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

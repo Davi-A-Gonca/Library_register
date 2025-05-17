@@ -20,7 +20,7 @@ public class LibraryController implements CRUDThymeleaf<Library, LibraryDTO>{
     //Create / Uptdate
     @Override
     @PostMapping(Constant.API_LIBRARY)
-    public ResponseEntity<Library> create(LibraryDTO dto) {
+    public ResponseEntity<Library> create(@RequestBody LibraryDTO dto) {
         Library savedLibrary = service.save(new Library(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLibrary);
     }
@@ -29,7 +29,7 @@ public class LibraryController implements CRUDThymeleaf<Library, LibraryDTO>{
     @Override
     @GetMapping(Constant.API_LIBRARY)
     public ResponseEntity<List<Library>> findAll(){
-        return ResponseEntity.ok(service.listAll());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class LibraryController implements CRUDThymeleaf<Library, LibraryDTO>{
     //Delete
     @Override
     @DeleteMapping(Constant.API_LIBRARY + "/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable String id){
+    public ResponseEntity<Void> deleteById(@PathVariable("id") String id){
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }

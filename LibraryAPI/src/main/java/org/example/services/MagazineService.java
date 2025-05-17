@@ -19,11 +19,11 @@ public class MagazineService {
         return m;
     }
 
-    public List<Magazine> listAll(){
+    public List<Magazine> findAll(){
         return repository.findAll();
     }
 
-    public Optional<Magazine> listById(String id){
+    public Optional<Magazine> findById(String id){
         return repository.findById(id);
     }
 
