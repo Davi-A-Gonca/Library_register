@@ -15,4 +15,11 @@ public abstract class PaperMedia implements Media {
     public PaperMedia(){
 
     }
+
+    public PaperMedia(String title, String summary, String publisher, Library place){
+        this.title = title;
+        this.summary = summary;
+        this.publisher = publisher;
+        this.place = place;
+    }
 }

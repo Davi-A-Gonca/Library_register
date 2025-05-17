@@ -17,4 +17,10 @@ public class Book extends PaperMedia {
     private String author;
     private int nPages;
 
+    public Book(BookDTO dto){
+        super(dto.getTitle(), dto.getSummary(), dto.getPublisher(), dto.getPlace());
+        this.author = dto.getAuthor();
+        this.nPages = dto.getNPages();
+    }
+
 }

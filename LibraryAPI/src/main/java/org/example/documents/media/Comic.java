@@ -14,5 +14,12 @@ public class Comic extends PaperMedia {
     @Id
     private String id;
 
+    private String author;
     private String artist;
+
+    public Comic(ComicDTO dto){
+        super(dto.getTitle(), dto.getSummary(), dto.getPublisher(), dto.getPlace());
+        this.author = dto.getAuthor();
+        this.artist = dto.getArtist();
+    }
 }

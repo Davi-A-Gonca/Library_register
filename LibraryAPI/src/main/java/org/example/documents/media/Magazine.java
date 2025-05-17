@@ -14,4 +14,8 @@ public class Magazine extends PaperMedia {
     @Id
     private String id;
 
+    public Magazine(MagazineDTO dto){
+        super(dto.getTitle(), dto.getSummary(), dto.getPublisher(), dto.getPlace());
+    }
+
 }

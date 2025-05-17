@@ -18,5 +18,8 @@ public class NewsPaper extends PaperMedia {
 
     private Date date;
 
-
+    public NewsPaper(NewsPaperDTO dto){
+        super(dto.getTitle(), dto.getSummary(), dto.getPublisher(), dto.getPlace());
+        this.date = dto.getDate();
+    }
 }
