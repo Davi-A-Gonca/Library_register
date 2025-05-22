@@ -1,3 +1,4 @@
+import 'package:apiexemplocall23032025/listarItens.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const OverflowBarExampleApp());
@@ -15,6 +16,9 @@ class OverflowBarExampleApp extends StatelessWidget {
     );
   }
 }
+
+TextEditingController _namecontroller = TextEditingController();
+TextEditingController _passwordcontroller = TextEditingController();
 
 class OverflowBarExample extends StatefulWidget {
   const OverflowBarExample({super.key});
@@ -34,22 +38,7 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
     listaTeste.forEach((k, v) {
       if (nome == k && senha == v) {
         loggedIn = true;
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Deu tudo certo'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        listarItens();
       }
     });
 
@@ -81,6 +70,8 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
     listaTeste[nome] = senha;
     setState(() {
       cadastro = false;
+      _passwordcontroller.text = "";
+      _namecontroller.text = "";
     });
   }
 
@@ -103,6 +94,7 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
               children: <Widget>[
                 TextField(
                   decoration: const InputDecoration(labelText: 'Nome:'),
+                  controller: _namecontroller,
                   onChanged: (String value) {
                     setState(() {
                       nome = value;
@@ -113,6 +105,7 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
                 TextField(
                   obscureText: true,
                   decoration: const InputDecoration(labelText: 'Senha:'),
+                  controller: _passwordcontroller,
                   onChanged: (String value) {
                     setState(() {
                       senha = value;

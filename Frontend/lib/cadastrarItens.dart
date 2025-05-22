@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'general_drawer.dart';
 
-void main() => runApp(const OverflowBarExampleApp());
+void cadastrarItens() => runApp(const OverflowBarExampleApp());
 
 class OverflowBarExampleApp extends StatelessWidget {
   const OverflowBarExampleApp({super.key});
@@ -10,6 +11,7 @@ class OverflowBarExampleApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Center(child: Text('Cadastro de Bibliotecas', textAlign: TextAlign.center))),
+        drawer: const AppDrawer(),
         body: const Center(child: OverflowBarExample()),
       ),
     );
