@@ -1,39 +1,68 @@
-import 'package:apiexemplocall23032025/Book.dart';
-import 'package:apiexemplocall23032025/Library.dart';
-import 'package:apiexemplocall23032025/Magazine.dart';
-import 'package:apiexemplocall23032025/Comic.dart';
-import 'package:apiexemplocall23032025/Newspaper.dart';
 import 'package:flutter/material.dart';
 import 'general_drawer.dart';
+import 'Book.dart';
+import 'Library.dart';
+import 'Magazine.dart';
+import 'Comic.dart';
+import 'Newspaper.dart';
 
-void listarItens() => runApp(const OverflowBarExampleApp());
-
-class OverflowBarExampleApp extends StatelessWidget {
-  const OverflowBarExampleApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(centerTitle: true, title: const Text('Busca de Itens')),
-        drawer: const AppDrawer(),
-        body: const Center(child: OverflowBarExample()),
-      ),
-    );
-  }
-}
-
-class OverflowBarExample extends StatefulWidget {
-  const OverflowBarExample({super.key});
+class ListarItens extends StatefulWidget {
+  const ListarItens({super.key});
 
   @override
-  State<OverflowBarExample> createState() => _OverflowBarExampleState();
+  State<ListarItens> createState() => _ListarItensPageState();
 }
 
-class _OverflowBarExampleState extends State<OverflowBarExample> {
-  
-  Color getColorForType(String? typeOfIten) {
-    switch (typeOfIten) {
+class _ListarItensPageState extends State<ListarItens> {
+  String? temaSelecionado;
+  bool itemProcurado = false;
+  bool filtroAtivo = false;
+
+  Library bibliotecaExemplo = Library(id: "4321", name: "Minha Biblioteca", cep: "14806-188");
+  late Book livroExemplo = Book(
+    title: "Livro maneiro",
+    summary: "Livro exemplo",
+    publisher: "Editora Exemplo",
+    place: bibliotecaExemplo,
+    id: "1234",
+    author: "Autor Desconhecido",
+    nPages: 100,
+  );
+  late Magazine revistaExemplo = Magazine(
+    title: "Revista Legal",
+    summary: "Resumo da revista",
+    publisher: "Editora A",
+    place: bibliotecaExemplo,
+    id: "5678",
+  );
+  late Comic quadrinhoExemplo = Comic(
+    title: "Quadrinho Show",
+    summary: "Quadrinho muito bacana",
+    publisher: "HQ Editora",
+    place: bibliotecaExemplo,
+    id: "9101",
+    author: "Desenhista X",
+    artist: "Artista Y",
+  );
+  late Newspaper jornalExemplo = Newspaper(
+    title: "Jornal Diário",
+    summary: "Notícias do dia",
+    publisher: "Editora Notícias",
+    place: bibliotecaExemplo,
+    id: "1121",
+    date: DateTime(2024, 12, 25),
+  );
+
+  final Map<String, double> alturaItens = {
+    'Livros': 136,
+    'Quadrinhos': 136,
+    'Revistas': 96,
+    'Jornais': 116,
+    'Bibliotecas': 76,
+  };
+
+  Color corPorTipo(String? tipo) {
+    switch (tipo) {
       case 'Livros':
         return Colors.blue.shade50;
       case 'Quadrinhos':
@@ -48,210 +77,212 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
         return Colors.grey.shade300;
     }
   }
-  
-  Widget intensInformation(String? typeOfIten){
-    switch(typeOfIten){
-      case 'Livros': return teste.itensInformation(context);
-      case 'Revistas': return testeRev.itensInformation(context);
-      case 'Quadrinhos': return testeComic.itensInformation(context);
-      case 'Jornais': return testeNP.itensInformation(context);
-      case 'Bibliotecas': return essa.itensInformation(context);
+
+  Widget informacoesDoItem(String? tipo) {
+    switch (tipo) {
+      case 'Livros':
+        return livroExemplo.itemInformation(context);
+      case 'Revistas':
+        return revistaExemplo.itemInformation(context);
+      case 'Quadrinhos':
+        return quadrinhoExemplo.itemInformation(context);
+      case 'Jornais':
+        return jornalExemplo.itemInformation(context);
+      case 'Bibliotecas':
+        return bibliotecaExemplo.itemInformation(context);
       default:
-        return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-            Text("Exemplo", style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text("Autor: Exemplo"),
-            Text("Categoria: Exemplo"),
-            Text("Número de páginas: X"),
-          ]
-        );
+        return const Text("Item não encontrado");
     }
   }
 
-/*  List<Widget> itemFound(String? typeOfIten, int times){
-      switch(typeOfIten){
-        case 'Livros':
-          return <Widget> [
-            for(int i = 0; i < times; i ++){
-              teste.itensInformation(context);
-            }
-          ];
-        case 'Revistas': return testeRev.itensInformation(context);
-        case 'Quadrinhos': return testeComic.itensInformation(context);
-        case 'Jornais': return testeNP.itensInformation(context);
-        case 'Bibliotecas': return essa.itensInformation(context);
-        default:
-          return <Widget> [Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-              Text("Exemplo", style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 8),
-              Text("Autor: Exemplo"),
-              Text("Categoria: Exemplo"),
-              Text("Número de páginas: X"),
-            ]
-          ),
-          ];
-    }
-  }*/
-
-  Widget itensToFind(String? typeOfIten, int times){
-    return Column(
-crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-        ListView.separated(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(8),
-          itemCount: times,
-          itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  itemProcurado = true;
-                });
-              },
-              child: SizedBox(
-              height: heightSizedBox[typeOfIten],
-              child: Container(
-                color: getColorForType(typeOfIten),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    intensInformation(typeOfIten),
-                  ],
-                  ),
-                ),
-              ),
-            );
+  Widget gerarListaDeItens(String? tipo, int quantidade) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(8),
+      itemCount: quantidade,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              itemProcurado = true;
+            });
           },
-          separatorBuilder: (BuildContext context, int index) => const Divider(),
+          child: SizedBox(
+            height: alturaItens[tipo] ?? 100,
+            child: Container(
+              color: corPorTipo(tipo),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: informacoesDoItem(tipo),
+              ),
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(),
+    );
+  }
+
+  Widget adicionarBiblioteca(Library biblioteca) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          biblioteca.getName(),
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Text("CEP: ${biblioteca.getCep()}"),
+            const Spacer(),
+            IconButton(
+              onPressed: () {
+                biblioteca.addInLibrary(context);
+              },
+              icon: const Icon(Icons.add),
+            ),
+          ],
         ),
       ],
     );
   }
-  
-  String? temaSelecionado;
-  bool itemProcurado = false;
-  bool buscaporTipo = false;
-  Library essa = Library(id: "4321", name: "name", cep: "14806-188");
-  late Book teste = Book(title: "Crainaça", summary: "Escrevi errado kk", publisher: "Esse mesmo", place: essa, id: "1234", author: "Eu", nPages: 4);
-  late Magazine testeRev = Magazine(title: "Crainaça", summary: "Escrevi errado kk", publisher: "Esse mesmo", place: essa, id: "1234");
-  late Comic testeComic = Comic(title: "Crainaça", summary: "Escrevi errado kk", publisher: "Esse mesmo", place: essa, id: "1234", author: "Eu", artist: "Mare :)");
-  late Newspaper testeNP = Newspaper(title: "Crainaça", summary: "Escrevi errado kk", publisher: "Esse mesmo", place: essa, id: "1234", date: DateTime(2020, 12, 30));
-  Map<String, double> heightSizedBox = {'Livros': 120, 'Quadrinhos': 120, 'Revistas': 80, 'Jornais': 100, 'Bibliotecas': 60};
-
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.black.withOpacity(0.15),
-      child: Material(
-        color: Colors.white,
-        elevation: 24,
-        borderRadius: BorderRadius.circular(4),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Nome:',
-                        suffixIcon: IconButton(
-                          onPressed: buscaporTipo ? () {
-                            setState((){
-                              itemProcurado = true;
-                            });
-                          } : null,
-                          icon: const Icon(Icons.search),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Escolha o que pesquisar'),
-                        DropdownButton<String>(
-                          value: temaSelecionado,
-                          isExpanded: true,
-                          hint: const Text('Selecione um tema'),
-                          items: <String>['Bibliotecas', 'Livros', 'Quadrinhos', 'Revistas', 'Jornais']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              temaSelecionado = newValue;
-                              buscaporTipo = true;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      appBar: AppBar(centerTitle: true, title: const Text('Busca de Itens')),
+      drawer: const AppDrawer(),
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        color: Colors.black.withOpacity(0.05),
+        child: Material(
+          color: Colors.white,
+          elevation: 8,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    if(itemProcurado)
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            intensInformation(temaSelecionado),
-                            const SizedBox(height: 8),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children:[
-                                    itensToFind(temaSelecionado, 3),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                    Expanded(
+                      flex: 3,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Nome:',
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                itemProcurado = true;
+                              });
+                            },
+                            icon: const Icon(Icons.search),
+                          ),
                         ),
                       ),
-                    const Spacer(),
-                    if(buscaporTipo)
-                      Expanded(
-                        flex: 2,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children:[
-                              itensToFind('Livros', 3),
-                              itensToFind('Quadrinhos', 3),
-                              itensToFind('Revistas', 3),
-                              itensToFind('Jornais', 3),
-                              itensToFind('Bibliotecas', 3),
-                              itensToFind('Nada', 3),
-                            ]
-                          )
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField<String>(
+                        value: temaSelecionado,
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Escolha o tipo',
                         ),
+                        items: [
+                          'Bibliotecas',
+                          'Livros',
+                          'Quadrinhos',
+                          'Revistas',
+                          'Jornais'
+                        ].map((tipo) {
+                          return DropdownMenuItem(
+                            value: tipo,
+                            child: Text(tipo),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            temaSelecionado = value;
+                            filtroAtivo = true;
+                            itemProcurado = false;
+                          });
+                        },
                       ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Expanded(
+                  child: 
+                    Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if(itemProcurado)
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (temaSelecionado == 'Bibliotecas') ...[
+                                adicionarBiblioteca(bibliotecaExemplo),
+                              ] else if ([
+                                'Livros',
+                                'Quadrinhos',
+                                'Revistas',
+                                'Jornais'
+                              ].contains(temaSelecionado)) ...[
+                                informacoesDoItem(temaSelecionado),
+                              ] else ...[
+                                const Text('Nenhum item encontrado')
+                              ],
+                              const SizedBox(height: 8),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      if (temaSelecionado == 'Bibliotecas') ...[
+                                        gerarListaDeItens('Livros', 3),
+                                        gerarListaDeItens('Quadrinhos', 3),
+                                        gerarListaDeItens('Revistas', 3),
+                                        gerarListaDeItens('Jornais', 3),
+                                      ] else if ([
+                                        'Livros',
+                                        'Quadrinhos',
+                                        'Revistas',
+                                        'Jornais'
+                                      ].contains(temaSelecionado)) ...[
+                                        gerarListaDeItens('Bibliotecas', 3),
+                                      ] else ...[
+                                        const Text('Nenhum item encontrado')
+                                      ]
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const Spacer(),
+                      if (filtroAtivo)
+                        Expanded(
+                          flex: 2,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                gerarListaDeItens(temaSelecionado, 5),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

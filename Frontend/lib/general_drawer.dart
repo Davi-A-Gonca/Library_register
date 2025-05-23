@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cadastrarItens.dart';
+import 'LibraryRegister.dart';
 import 'main.dart';
 import 'listarItens.dart';
 
@@ -28,21 +28,31 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.search),
             title: const Text('Listar Itens'),
             onTap: () {
-              listarItens();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ListarItens()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.add),
             title: const Text('Cadastrar Item'),
             onTap: () {
-              cadastrarItens();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LibraryRegisterApp()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Sair'),
             onTap: () {
-              main();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginApp()),
+                (Route<dynamic> route) => false, // Remove todas as telas anteriores
+              );
             },
           ),
         ],

@@ -1,61 +1,76 @@
+import 'package:apiexemplocall23032025/LibraryRegister.dart';
 import 'package:apiexemplocall23032025/listarItens.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const OverflowBarExampleApp());
+// Função principal que executa o app
+void main() => runApp(const LoginApp());
 
-class OverflowBarExampleApp extends StatelessWidget {
-  const OverflowBarExampleApp({super.key});
+// App principal
+class LoginApp extends StatelessWidget {
+  const LoginApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Center(child: Text('Login/Cadastro', textAlign: TextAlign.center))),
-        body: const Center(child: OverflowBarExample()),
+        appBar: AppBar(
+          title: const Center(
+            child: Text('Login/Cadastro'),
+          ),
+        ),
+        body: const Center(
+          child: LoginScreen(),
+        ),
       ),
     );
   }
 }
 
-TextEditingController _namecontroller = TextEditingController();
-TextEditingController _passwordcontroller = TextEditingController();
+// Controladores dos campos de texto (nome e senha)
+final TextEditingController _nameController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
 
-class OverflowBarExample extends StatefulWidget {
-  const OverflowBarExample({super.key});
+// Tela de Login e Cadastro
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  _OverflowBarExampleState createState() => _OverflowBarExampleState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _OverflowBarExampleState extends State<OverflowBarExample> {
-  bool cadastro = false;
+class _LoginScreenState extends State<LoginScreen> {
+  bool cadastroAtivo = false;
   String nome = '';
   String senha = '';
-  final Map<String, String> listaTeste = {'nome': 'senha'};
 
+  // Lista simples para armazenar usuários (nome e senha)
+  final Map<String, String> usuarios = {
+    'nome': 'senha',
+  };
+
+  // Função para realizar o login
   Future<void> fazerLogin(String nome, String senha) async {
-    bool loggedIn = false;
-    listaTeste.forEach((k, v) {
-      if (nome == k && senha == v) {
-        loggedIn = true;
-        listarItens();
-      }
-    });
-
-    if (!loggedIn) {
-      showDialog<String>(
+    if (usuarios[nome] == senha) {
+      // Login bem-sucedido → Redireciona para a próxima tela
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LibraryRegisterApp()),
+      );
+    } else {
+      // Login falhou → Pergunta se quer cadastrar
+      showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Nome ou senha errados ou não cadastrados'),
-          content: const Text('Gostaria de cadastrar?'),
-          actions: <Widget>[
+          title: const Text('Erro no login'),
+          content: const Text('Nome ou senha incorretos.\nDeseja se cadastrar?'),
+          actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
+              onPressed: () => Navigator.pop(context),
               child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context, 'Cadastrar');
+                Navigator.pop(context);
                 fazerCadastro(nome, senha);
               },
               child: const Text('Cadastrar'),
@@ -66,12 +81,13 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
     }
   }
 
+  // Função para realizar o cadastro
   Future<void> fazerCadastro(String nome, String senha) async {
-    listaTeste[nome] = senha;
     setState(() {
-      cadastro = false;
-      _passwordcontroller.text = "";
-      _namecontroller.text = "";
+      usuarios[nome] = senha;
+      cadastroAtivo = false;
+      _nameController.clear();
+      _passwordController.clear();
     });
   }
 
@@ -84,49 +100,56 @@ class _OverflowBarExampleState extends State<OverflowBarExample> {
       child: Material(
         color: Colors.white,
         elevation: 24,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+              children: [
+                // Campo de nome
                 TextField(
-                  decoration: const InputDecoration(labelText: 'Nome:'),
-                  controller: _namecontroller,
-                  onChanged: (String value) {
+                  decoration: const InputDecoration(labelText: 'Nome'),
+                  controller: _nameController,
+                  onChanged: (value) {
                     setState(() {
                       nome = value;
                     });
                   },
                 ),
+
                 const SizedBox(height: 20),
+
+                // Campo de senha
                 TextField(
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Senha:'),
-                  controller: _passwordcontroller,
-                  onChanged: (String value) {
+                  decoration: const InputDecoration(labelText: 'Senha'),
+                  controller: _passwordController,
+                  onChanged: (value) {
                     setState(() {
                       senha = value;
                     });
                   },
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 30),
+
+                // Botões de ação
                 Row(
-                  children: <Widget>[
-                    if (!cadastro)
+                  children: [
+                    if (!cadastroAtivo)
                       OutlinedButton(
-                          onPressed: () {
-                            setState(() {
-                              cadastro = true;
-                            });
-                          },
-                          child: const Text('Cadastro')),
+                        onPressed: () {
+                          setState(() {
+                            cadastroAtivo = true;
+                          });
+                        },
+                        child: const Text('Cadastro'),
+                      ),
                     const Spacer(),
                     OutlinedButton(
                       onPressed: () {
-                        if (cadastro) {
+                        if (cadastroAtivo) {
                           fazerCadastro(nome, senha);
                         } else {
                           fazerLogin(nome, senha);
