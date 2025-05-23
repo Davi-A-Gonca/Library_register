@@ -1,4 +1,5 @@
 import 'package:apiexemplocall23032025/ItemsRegister.dart';
+import 'package:apiexemplocall23032025/InteractionsAPI.dart';
 import 'package:apiexemplocall23032025/Library.dart';
 import 'package:flutter/material.dart';
 import 'general_drawer.dart';
@@ -143,6 +144,8 @@ class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
       Library library =
           Library(id: "id", name: nome, cep: endereco.cep);
 
+      Interactionsapi.sendLibrary(library);
+      
       // Mostra um diálogo de sucesso e oferece cadastrar itens
       await showDialog<String>(
         context: context,
