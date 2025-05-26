@@ -10,13 +10,13 @@ public abstract class PaperMedia implements Media {
     private String title;
     private String summary;
     private String publisher;
-    private Library place;
+    private String place;
 
     public PaperMedia(){
 
     }
 
-    public PaperMedia(String title, String summary, String publisher, Library place){
+    public PaperMedia(String title, String summary, String publisher, String place){
         this.title = title;
         this.summary = summary;
         this.publisher = publisher;
