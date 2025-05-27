@@ -21,6 +21,7 @@ public class LibraryController implements CRUDThymeleaf<Library, LibraryDTO>{
     @Override
     @PostMapping(Constant.API_LIBRARY)
     public ResponseEntity<Library> create(@RequestBody LibraryDTO dto) {
+        System.out.println("Chegou");
         Library savedLibrary = service.save(new Library(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLibrary);
     }
