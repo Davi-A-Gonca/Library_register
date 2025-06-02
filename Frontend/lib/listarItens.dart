@@ -1,3 +1,4 @@
+import 'package:apiexemplocall23032025/Standardizer.dart';
 import 'package:flutter/material.dart';
 import 'general_drawer.dart';
 import 'Book.dart';
@@ -5,6 +6,8 @@ import 'Library.dart';
 import 'Magazine.dart';
 import 'Comic.dart';
 import 'Newspaper.dart';
+import 'InteractionsAPI.dart';
+import 'MockDataProvider.dart';
 
 class ListarItens extends StatefulWidget {
   const ListarItens({super.key});
@@ -14,44 +17,18 @@ class ListarItens extends StatefulWidget {
 }
 
 class _ListarItensPageState extends State<ListarItens> {
+  // Listas pré-existentes
+  List<Library> existingLibraries = [];
+  List<Comic> existingComics = [];
+  List<Book> existingBooks = [];
+  List<Magazine> existingMagazines = [];
+  List<Newspaper> existingNewsPapers = [];
+
+  
+  Standardizer? itemelecionado;
   String? temaSelecionado;
   bool itemProcurado = false;
   bool filtroAtivo = false;
-
-  Library bibliotecaExemplo = Library(id: "4321", name: "Minha Biblioteca", cep: "14806-188");
-  late Book livroExemplo = Book(
-    title: "Livro maneiro",
-    summary: "Livro exemplo",
-    publisher: "Editora Exemplo",
-    place: bibliotecaExemplo,
-    id: "1234",
-    author: "Autor Desconhecido",
-    nPages: 100,
-  );
-  late Magazine revistaExemplo = Magazine(
-    title: "Revista Legal",
-    summary: "Resumo da revista",
-    publisher: "Editora A",
-    place: bibliotecaExemplo,
-    id: "5678",
-  );
-  late Comic quadrinhoExemplo = Comic(
-    title: "Quadrinho Show",
-    summary: "Quadrinho muito bacana",
-    publisher: "HQ Editora",
-    place: bibliotecaExemplo,
-    id: "9101",
-    author: "Desenhista X",
-    artist: "Artista Y",
-  );
-  late Newspaper jornalExemplo = Newspaper(
-    title: "Jornal Diário",
-    summary: "Notícias do dia",
-    publisher: "Editora Notícias",
-    place: bibliotecaExemplo,
-    id: "1121",
-    date: DateTime(2024, 12, 25),
-  );
 
   final Map<String, double> alturaItens = {
     'Livros': 136,
@@ -60,6 +37,68 @@ class _ListarItensPageState extends State<ListarItens> {
     'Jornais': 116,
     'Bibliotecas': 76,
   };
+
+  //Listar Bibliotecas
+  Future<void> listLibraries() async{
+    List<Library> placeholderLibrary = await Interactionsapi.getLibraries();
+    try {
+      placeholderLibrary = await Interactionsapi.getLibraries();
+      placeholderLibrary.forEach((teste) => print(teste.cep + teste.id + teste.name));
+      setState(() {
+      existingLibraries = placeholderLibrary;
+      });
+    } catch (e, stack) {
+      print("Erro ao chamar getLibraries: $e");
+      print(stack);
+      return;
+    }
+  }
+
+  //Listar Bibliotecas
+  Future<void> listComics() async{
+    List<Comic> placeholderComics = await Interactionsapi.getComic();
+    setState(() {
+      existingComics = placeholderComics;
+    });
+  }
+
+  //Listar Bibliotecas
+  Future<void> listBooks() async{
+    List<Book> placeholderBooks = await Interactionsapi.getBook();
+    setState(() {
+      existingBooks = placeholderBooks;
+    });
+  }
+
+  //Listar Bibliotecas
+  Future<void> listMagazines() async{
+    List<Magazine> placeholderMagazines = await Interactionsapi.getMagazine();
+    setState(() {
+      existingMagazines = placeholderMagazines;
+    });
+  }
+
+  //Listar Bibliotecas
+  Future<void> listNewspaper() async{
+    List<Newspaper> placeholderNewspaper = await Interactionsapi.getNewsPaper();
+    setState(() {
+      existingNewsPapers = placeholderNewspaper;
+    });
+  }
+
+@override
+void initState() {
+  super.initState();
+
+  final mock = MockDataProvider();
+
+  existingBooks = mock.generateBooks(5);
+  existingComics = mock.generateComics(5);
+  existingMagazines = mock.generateMagazines(5);
+  existingNewsPapers = mock.generateNewspapers(5);
+  listLibraries();
+}
+
 
   Color corPorTipo(String? tipo) {
     switch (tipo) {
@@ -78,34 +117,25 @@ class _ListarItensPageState extends State<ListarItens> {
     }
   }
 
-  Widget informacoesDoItem(String? tipo) {
-    switch (tipo) {
-      case 'Livros':
-        return livroExemplo.itemInformation(context);
-      case 'Revistas':
-        return revistaExemplo.itemInformation(context);
-      case 'Quadrinhos':
-        return quadrinhoExemplo.itemInformation(context);
-      case 'Jornais':
-        return jornalExemplo.itemInformation(context);
-      case 'Bibliotecas':
-        return bibliotecaExemplo.itemInformation(context);
-      default:
+  Widget informacoesDoItem(Standardizer? item) {
+    if(item == null){
         return const Text("Item não encontrado");
     }
+    return item.itemInformation(context);
   }
 
-  Widget gerarListaDeItens(String? tipo, int quantidade) {
+  Widget gerarListaDeItens(String? tipo, List<Standardizer> items) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(8),
-      itemCount: quantidade,
+      itemCount: items.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
             setState(() {
               itemProcurado = true;
+              itemelecionado = items[index];
             });
           },
           child: SizedBox(
@@ -114,7 +144,7 @@ class _ListarItensPageState extends State<ListarItens> {
               color: corPorTipo(tipo),
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: informacoesDoItem(tipo),
+                child: informacoesDoItem(items[index]),
               ),
             ),
           ),
@@ -123,6 +153,23 @@ class _ListarItensPageState extends State<ListarItens> {
       separatorBuilder: (context, index) => const Divider(),
     );
   }
+
+Widget buildFilteredList(String? temaSelecionado) {
+  switch (temaSelecionado) {
+    case 'Livros':
+      return gerarListaDeItens('Livros', existingBooks);
+    case 'Quadrinhos':
+      return gerarListaDeItens('Quadrinhos', existingComics);
+    case 'Revistas':
+      return gerarListaDeItens('Revistas', existingMagazines);
+    case 'Jornais':
+      return gerarListaDeItens('Jornais', existingNewsPapers);
+    case 'Bibliotecas':
+      return gerarListaDeItens('Bibliotecas', existingLibraries);
+    default:
+      return const Text('Nenhum item encontrado');
+  }
+}
 
   Widget adicionarBiblioteca(Library biblioteca) {
     return Column(
@@ -218,7 +265,7 @@ class _ListarItensPageState extends State<ListarItens> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: 
-                    Row(
+                    Row( // listar itens em biblioteca ou bibliotecas que tem itens
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if(itemProcurado)
@@ -227,35 +274,35 @@ class _ListarItensPageState extends State<ListarItens> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (temaSelecionado == 'Bibliotecas') ...[
-                                adicionarBiblioteca(bibliotecaExemplo),
+                              if (itemelecionado is Library) ...[
+                                adicionarBiblioteca(itemelecionado as Library),
                               ] else if ([
                                 'Livros',
                                 'Quadrinhos',
                                 'Revistas',
                                 'Jornais'
                               ].contains(temaSelecionado)) ...[
-                                informacoesDoItem(temaSelecionado),
+                                informacoesDoItem(itemelecionado),
                               ] else ...[
                                 const Text('Nenhum item encontrado')
                               ],
                               const SizedBox(height: 8),
-                              Expanded(
+                              Expanded( //listar dos temas
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
                                       if (temaSelecionado == 'Bibliotecas') ...[
-                                        gerarListaDeItens('Livros', 3),
-                                        gerarListaDeItens('Quadrinhos', 3),
-                                        gerarListaDeItens('Revistas', 3),
-                                        gerarListaDeItens('Jornais', 3),
+                                        gerarListaDeItens('Livros', existingBooks),
+                                        gerarListaDeItens('Quadrinhos', existingComics),
+                                        gerarListaDeItens('Revistas', existingMagazines),
+                                        gerarListaDeItens('Jornais', existingNewsPapers),
                                       ] else if ([
                                         'Livros',
                                         'Quadrinhos',
                                         'Revistas',
                                         'Jornais'
                                       ].contains(temaSelecionado)) ...[
-                                        gerarListaDeItens('Bibliotecas', 3),
+                                        gerarListaDeItens('Bibliotecas', existingLibraries),
                                       ] else ...[
                                         const Text('Nenhum item encontrado')
                                       ]
@@ -268,12 +315,12 @@ class _ListarItensPageState extends State<ListarItens> {
                         ),
                       const Spacer(),
                       if (filtroAtivo)
-                        Expanded(
+                        Expanded( //listar do filtro
                           flex: 2,
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                gerarListaDeItens(temaSelecionado, 5),
+                                buildFilteredList(temaSelecionado),
                               ],
                             ),
                           ),

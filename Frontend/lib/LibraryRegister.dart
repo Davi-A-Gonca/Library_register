@@ -2,6 +2,8 @@ import 'package:apiexemplocall23032025/ItemsRegister.dart';
 import 'package:apiexemplocall23032025/InteractionsAPI.dart';
 import 'package:apiexemplocall23032025/Library.dart';
 import 'package:flutter/material.dart';
+import 'InteractionsCEP.dart';
+import 'Library.dart';
 import 'general_drawer.dart';
 
 /// Função principal que roda o app de cadastro de bibliotecas
@@ -36,6 +38,16 @@ class Address {
   String estado = '';
   String cep = '';
 
+  Address.fromMap(Map<String, dynamic> map) {
+    logradouro = map['logradouro'] ?? '';
+    bairro = map['bairro'] ?? '';
+    complemento = map['complemento'] ?? '';
+    cidade = map['localidade'] ?? '';
+    estado = map['uf'] ?? '';
+    cep = map['cep'] ?? '';
+    numero = ''; // API não retorna número, geralmente precisa ser preenchido manualmente
+  }
+
   /// Retorna o endereço como uma string formatada
   @override
   String toString() {
@@ -57,51 +69,52 @@ class LibraryRegisterForm extends StatefulWidget {
 }
 
 class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
+  ///Lista de bibliotecas
+  List<Library> existingLybraries = [];
+
   /// Nome da biblioteca
   String nome = '';
 
-  /// Endereço da biblioteca (objeto Address)
-  Address endereco = Address();
+  //CEP da biblioteca
+  String cep = '';
 
-  /// Lista de bibliotecas cadastradas (mock para exemplo)
-  final Map<String, List<String>> listaTeste = {
-    'Alexandria': [
-      'Rua dos bobos',
-      '0',
-      'Jardim Otários',
-      'A esquerda do papa Leão 4',
-      'Estado',
-      'CI',
-      '10'
-    ]
-  };
+  //Controllers
+  TextEditingController nomeController = new TextEditingController();
+  TextEditingController logradouroController = new TextEditingController();
+  TextEditingController numeroController = new TextEditingController();
+  TextEditingController bairroController = new TextEditingController();
+  TextEditingController complementoController = new TextEditingController();
+  TextEditingController cidadeController = new TextEditingController();
+  TextEditingController estadoController = new TextEditingController();
+  TextEditingController cepController = new TextEditingController();
 
-  /// Checa se a biblioteca já existe na lista
-  Future<bool> checarBiblioteca(String nome, Address endereco) async {
-    bool bibliotecaExiste = true;
-
-    for (var entry in listaTeste.entries) {
-      // Verifica se o nome é igual e se o endereço é igual
-      if (entry.key == nome &&
-          _enderecosSaoIguais(entry.value, endereco.toList())) {
-        var library = Library(id: "id", name: entry.key, cep: entry.value.last);
-
-        // Mostra o diálogo informando que a biblioteca já existe
-        await _mostrarDialogoBibliotecaExiste(library);
-        bibliotecaExiste = false;
-        break;
-      }
-    }
-    return bibliotecaExiste;
+  //Listar Bibliotecas
+  Future<void> listLibraries() async{
+    List<Library> placeholderLibrary = await Interactionsapi.getLibraries();
+    setState(() {
+      existingLybraries = placeholderLibrary;
+    });
   }
 
-  /// Compara se dois endereços (listas de strings) são iguais
-  bool _enderecosSaoIguais(List<String> e1, List<String> e2) {
-    if (e1.length != e2.length) return false;
-    for (int i = 0; i < e1.length; i++) {
-      if (e1[i] != e2[i]) return false;
-    }
-    return true;
+@override
+void initState() {
+  super.initState();
+  listLibraries();
+}
+
+  /// Checa se a biblioteca já existe na lista
+  Future<bool> checarBiblioteca(String nome, String cep) async {
+    bool bibliotecaExiste = true;
+
+    //Checar Biblioteca Por Biblioteca na lista
+    existingLybraries.forEach((library){
+      if(library.cep == cep || library.name == nome){
+        _mostrarDialogoBibliotecaExiste(library);
+        bibliotecaExiste = false;
+        return;
+      }
+    });
+    return bibliotecaExiste;
   }
 
   /// Mostra o diálogo caso a biblioteca já exista
@@ -133,18 +146,13 @@ class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
   /// Faz o cadastro da biblioteca
   Future<void> fazerCadastro() async {
     // Checa se já existe
-    bool podeCadastrar = await checarBiblioteca(nome, endereco);
+    bool podeCadastrar = await checarBiblioteca(nome, cep);
 
     if (podeCadastrar) {
-      // Se não existir, adiciona na lista
-      setState(() {
-        listaTeste[nome] = endereco.toList();
-      });
+      Library newLibrary = new Library(id: "1", name: nome, cep: cep);
+      existingLybraries.add(newLibrary);
 
-      Library library =
-          Library(id: "id", name: nome, cep: endereco.cep);
-
-      Interactionsapi.sendLibrary(library);
+      Interactionsapi.sendLibrary(newLibrary);
       
       // Mostra um diálogo de sucesso e oferece cadastrar itens
       await showDialog<String>(
@@ -156,7 +164,7 @@ class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context, 'Cadastrar item');
-                library.addInLibrary(context);
+                newLibrary.addInLibrary(context);
               },
               child: const Text('Cadastrar item'),
             ),
@@ -173,11 +181,25 @@ class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
   }
 
   /// Cria um TextField configurado
-  Widget buildTextField(String label, void Function(String) onChanged) {
+  Widget buildTextField(String label, TextEditingController controller, void Function(String) onChanged) {
     return TextField(
       decoration: InputDecoration(labelText: label),
+      controller: controller,
       onChanged: onChanged,
     );
+  }
+
+  //Colocar o endereço nos campos de cadastro
+  Future<void> adressUpdate(cep) async{
+    Address address = await InteractionsCEP.searchCEP(cep);
+    setState((){
+      logradouroController.text = address.logradouro;
+      numeroController.text = address.numero;
+      bairroController.text = address.bairro;
+      complementoController.text = address.complemento;
+      cidadeController.text = address.cidade;
+      estadoController.text = address.estado;
+    });
   }
 
   /// Monta a interface da tela
@@ -200,14 +222,27 @@ class _LibraryRegisterFormState extends State<LibraryRegisterForm> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 // Campos do formulário
-                buildTextField('Nome:', (value) => nome = value),
-                buildTextField('Logradouro:', (value) => endereco.logradouro = value),
-                buildTextField('Número:', (value) => endereco.numero = value),
-                buildTextField('Bairro:', (value) => endereco.bairro = value),
-                buildTextField('Complemento:', (value) => endereco.complemento = value),
-                buildTextField('Cidade:', (value) => endereco.cidade = value),
-                buildTextField('Estado:', (value) => endereco.estado = value),
-                buildTextField('CEP:', (value) => endereco.cep = value),
+                buildTextField('Nome:', nomeController, (value) => nome = value),
+                buildTextField('Logradouro:', logradouroController, (value) {}),
+                buildTextField('Número:', numeroController, (value) {}),
+                buildTextField('Bairro:', bairroController, (value) {}),
+                buildTextField('Complemento:', complementoController, (value) {}),
+                buildTextField('Cidade:', cidadeController, (value) {}),
+                buildTextField('Estado:', estadoController, (value) {}),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: buildTextField('CEP:', cepController, (value) => cep = value),
+                    ),
+                    const SizedBox(width: 8), // Espaçamento entre campo e botão
+                    OutlinedButton(
+                      onPressed: () {
+                        adressUpdate(cepController.text); // Use o valor do controller, não da variável `cep`
+                      },
+                      child: const Text('Pesquisar CEP?'),
+                    ),
+                  ],
+                ),
 
                 const SizedBox(height: 20),
 

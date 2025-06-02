@@ -56,9 +56,9 @@ class Interactionsapi {
   }
 
   static Future<List<Library>> getLibraries() async{
-    List<Library> list;
+    List<dynamic> list;
     
-    final urlLibrary = Uri.parse("${URI}library/");
+    final urlLibrary = Uri.parse("${URI}library");
 
     final response = await http.get(
       urlLibrary,
@@ -70,7 +70,7 @@ class Interactionsapi {
     if(response.statusCode == 200){
       String data = utf8.decode(response.bodyBytes);
       list = json.decode(data);
-      return list;
+      return list.map((json) => Library.fromJson(json)).toList();
     }else{
       throw Exception("Falha ao Tentar recuperar recurso");
     }

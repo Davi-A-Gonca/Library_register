@@ -1,8 +1,9 @@
 import 'package:apiexemplocall23032025/Library.dart';
 import 'package:apiexemplocall23032025/PaperMedia.dart';
 import 'package:flutter/material.dart';
+import 'Standardizer.dart';
 
-class Newspaper extends Papermedia {
+class Newspaper extends Papermedia  implements Standardizer{
   final String id;
   final DateTime date;
 

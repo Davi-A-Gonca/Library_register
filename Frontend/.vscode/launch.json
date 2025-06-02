@@ -7,18 +7,21 @@
         {
             "name": "Frontend",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--web-hostname=localhost", "--web-port=60723"]
         },
         {
             "name": "Frontend (profile mode)",
             "request": "launch",
             "type": "dart",
+            "args": ["--web-hostname=localhost", "--web-port=60723"],
             "flutterMode": "profile"
         },
         {
             "name": "Frontend (release mode)",
             "request": "launch",
             "type": "dart",
+            "args": ["--web-hostname=localhost", "--web-port=60723"],
             "flutterMode": "release"
         }
     ]

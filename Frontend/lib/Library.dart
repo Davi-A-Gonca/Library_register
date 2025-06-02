@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'ItemsRegister.dart';
+import 'Standardizer.dart';
 
-class Library {
+class Library implements Standardizer{
   final String id;
   final String name;
   final String cep;
@@ -11,6 +12,15 @@ class Library {
     required this.name,
     required this.cep,
   });
+
+  factory Library.fromJson(Map<String, dynamic> json) {
+    return Library(
+      id: json['id'].toString(),
+      name: json['name'],
+      cep: json['cep'],
+    );
+  }
+
 
   String getName() => name;
   String getCep() => cep;

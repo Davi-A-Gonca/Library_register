@@ -31,7 +31,7 @@ public class Main {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica para todas as rotas da sua API
-                        .allowedOrigins("http://localhost:54354") // Adicione a origem exata do seu Flutter Web
+                        .allowedOrigins("http://localhost:60723") // Adicione a origem exata do seu Flutter Web
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD") // Permite todos os métodos necessários
                         .allowedHeaders("*") // Permite todos os cabeçalhos
                         .allowCredentials(true) // Se você for usar cookies, sessões ou cabeçalhos de autorização como "Authorization"

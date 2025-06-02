@@ -2,8 +2,9 @@ import 'package:apiexemplocall23032025/Library.dart';
 import 'package:apiexemplocall23032025/PaperMedia.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'Standardizer.dart';
 
-class Book extends Papermedia {
+class Book extends Papermedia implements Standardizer{
   final String id;
   final String author;
   final int nPages;

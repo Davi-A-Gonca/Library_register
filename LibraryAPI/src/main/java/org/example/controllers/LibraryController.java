@@ -30,6 +30,7 @@ public class LibraryController implements CRUDThymeleaf<Library, LibraryDTO>{
     @Override
     @GetMapping(Constant.API_LIBRARY)
     public ResponseEntity<List<Library>> findAll(){
+        System.out.println("Foi-se");
         return ResponseEntity.ok(service.findAll());
     }
 

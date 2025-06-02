@@ -3,41 +3,39 @@ import 'dart:convert';
 import 'package:apiexemplocall23032025/LibraryRegister.dart';
 import 'package:http/http.dart' as http;
 
-class Interactionsapi {
+class InteractionsCEP {
 
   static String regex = r"^[0-9]{8}$";
 
   static String getURL(String cep){
-    return "https://viacep.com.br/ws/${cep}/json/?callback=meu_callback";
+    return "https://viacep.com.br/ws/${cep}/json/";
   }
 
-  static Future<Map<String, dynamic>> searchCEP(String cep) async{
-    final url = Uri.parse(getURL(cep));
+  static Future<Address> searchCEP(String cep) async{
+final url = Uri.parse(getURL(cep)); // certifique-se de implementar getURL
 
-    try{
-      final response = await http.get(url);
+  try {
+    final response = await http.get(url);
 
-      if(response.statusCode == 200){
-        String responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      String responseBody = utf8.decode(response.bodyBytes);
+      final Map<String, dynamic> data = json.decode(responseBody);
 
-        final Map<String, String> data = json.decode(responseBody);
-
-        if(data.containsKey('erro') && data['erro'] == "true"){
-          throw Exception("CEP $cep invalido\n");
-        }
-
-        return data;
-      }else{
-        throw Exception("Failure to get CEP via URL");
+      if (data.containsKey('erro') && data['erro'] == true) {
+        throw Exception("CEP $cep inválido");
       }
-    }catch(e){
-      print("Erro ao consultar CEP\n${e}");
-      throw Exception("Error trying to get CEP");
-    }
-  }
 
-  static Address verifyCallback(Map<String, String> content){
-    Address newAddress = new Address();
+      return Address.fromMap(data);
+    } else {
+      throw Exception("Falha ao obter CEP pela URL");
+    }
+  } catch (e) {
+    print("Erro ao consultar CEP: $e");
+    throw Exception("Erro ao tentar obter o CEP");
+  }  }
+
+  static Address verifyCallback(Map<String, dynamic> content){
+    Address newAddress = new Address.fromMap(content);
 
     newAddress.logradouro = content['logradouro']!;
     newAddress.numero = content['numero']!;
